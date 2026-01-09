@@ -1,0 +1,3 @@
+powershell -ExecutionPolicy Bypass -File "reset_cursor_windows-v0.1.ps1"
+powershell -ExecutionPolicy Bypass -File "reset_windsurf_windows-v0.1.ps1"
+powershell -ExecutionPolicy Bypass -File "change_device_id.ps1"
