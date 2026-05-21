@@ -1,2 +1,39 @@
+# IDE config directories
+.cursor/
+.windsurf/
+.codeium/
+
+# Backup files
+*.backup
+*.bak
+*~
+*.tmp
+ID_Backups/
+
+# Logs
+*.log
+
+# Python caching
+__pycache__/
+*.pyc
+
+# Local state / fingerprint history
+.local/state/LicenseIdentity/
+
+# macOS
+.DS_Store
+
+# Test scratch file
+test.txt
+
+# Installers
 CursorFreeVIP_1.11.03_windows.exe
 CursorFreeVIP_1.8.08_windows.exe
+
+# Scratch / Temp files
+arena.txt
+compare.md
+desktop.ini
+files.txt
+structure.txt
+models/

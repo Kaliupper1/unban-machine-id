@@ -1,93 +1,146 @@
 # Machine ID Reset Tools
 
-This collection of PowerShell scripts helps you reset device identifiers for Cursor and Windsurf code editors, and change Windows device IDs.
+Scripts to reset device identifiers for **Cursor** and **Windsurf**, and to inspect or reset system machine IDs. Available for **Windows** (PowerShell) and **Linux** (Bash).
 
 ## What These Tools Do
 
-When you use software applications, they often create unique IDs to identify your computer. Sometimes you need to reset these IDs to fix licensing issues or start fresh. These scripts do that automatically for you.
+Applications often create unique IDs to identify your computer. These scripts generate new IDs, update the relevant config files, and create backups automatically.
 
-## Available Scripts
+## Platform Overview
 
-### 1. Reset Cursor ID (reset_cursor_windows-v0.1.ps1)
+| Task | Windows | Linux |
+|------|---------|-------|
+| Reset Cursor | `reset_cursor_windows-v0.1.ps1` | `reset_cursor_linux-v0.1.sh` |
+| Reset Windsurf | `reset_windsurf_windows-v0.1.ps1` | `reset_windsurf_linux-v0.1.sh` |
+| Device fingerprint | `change_device_id.ps1` | `change_device_id_linux.sh Fingerprint` |
+| System machine ID | Windows Registry `MachineGuid` | `/etc/machine-id` |
+| Interactive menu | `how-to-run.bat` | `how-to-run.sh` |
 
-**What it does:** Creates new IDs for the Cursor code editor
+---
 
-**Simple steps:**
+## Linux
+
+### Requirements
+
+- **bash** 4+
+- **python3** (recommended — used for JSON and SQLite updates)
+- **uuidgen** or readable `/proc/sys/kernel/random/uuid`
+- **openssl** or **xxd** (for random hex IDs)
+- **sudo** (optional) — only needed to reset `/etc/machine-id`
+
+### Quick start
+
+```bash
+cd /path/to/this/repo
+chmod +x *.sh
+./how-to-run.sh
+```
+
+Or run scripts directly:
+
+```bash
+# Cursor (close Cursor first)
+./reset_cursor_linux-v0.1.sh
+sudo ./reset_cursor_linux-v0.1.sh   # also resets /etc/machine-id
+
+# Windsurf (close Windsurf first)
+./reset_windsurf_linux-v0.1.sh
+sudo ./reset_windsurf_linux-v0.1.sh
+
+# Fingerprint only (no root)
+./change_device_id_linux.sh Fingerprint
+
+# Reset Linux system machine-id (root)
+sudo ./change_device_id_linux.sh ResetMachineId
+```
+
+### Linux paths
+
+| App | Config location |
+|-----|-----------------|
+| Cursor | `~/.config/Cursor/` |
+| Windsurf | `~/.config/Windsurf/`, `~/.windsurf/`, `~/.codeium/` |
+| Fingerprint state | `~/.local/state/LicenseIdentity/fingerprint_state.json` |
+
+`XDG_CONFIG_HOME` and `XDG_STATE_HOME` are respected when set.
+
+### Linux scripts
+
+- `reset_cursor_linux-v0.1.sh` — Resets Cursor IDs (`machineId`, `storage.json`, `state.vscdb`)
+- `reset_windsurf_linux-v0.1.sh` — Resets Windsurf and Codeium IDs
+- `change_device_id_linux.sh` — `Fingerprint` or `ResetMachineId`
+- `how-to-run.sh` — Interactive menu
+
+> **Note:** `change_device_id.ps1` modes `LegacyReset` and `RepairProfiles` are **Windows-only** (registry and profile list). On Linux use `ResetMachineId` for system ID changes.
+
+---
+
+## Windows
+
+### 1. Reset Cursor ID (`reset_cursor_windows-v0.1.ps1`)
 
 - Creates fresh identification numbers
-- Updates all necessary files and settings
-- Makes backups of your original settings
+- Updates Cursor config files and SQLite DB
+- Backs up originals
+- Updates Windows Registry `MachineGuid` (requires Administrator)
 
-**Before running:**
+**Before running:** Close Cursor. Run PowerShell as Administrator.
 
-- Close Cursor completely
-- Run PowerShell as Administrator
+### 2. Reset Windsurf ID (`reset_windsurf_windows-v0.1.ps1`)
 
-### 2. Reset Windsurf ID (reset_windsurf_windows-v0.1.ps1)
+- Resets Windsurf and Codeium configuration
+- Timestamped backups under `%APPDATA%\Windsurf\ID_Backups`
+- Updates Windows Registry `MachineGuid` (requires Administrator)
 
-**What it does:** Creates new IDs for the Windsurf code editor
+**Before running:** Close Windsurf. Run PowerShell as Administrator.
 
-**Simple steps:**
+### 3. Change Windows Device ID (`change_device_id.ps1`)
 
-- Creates fresh identification numbers
-- Updates configuration files
-- Makes backup copies with timestamps
-- Also resets Codeium settings
+| Mode | Description |
+|------|-------------|
+| `Fingerprint` (default) | JSON fingerprint from system signals; does not modify IDs |
+| `LegacyReset` | Changes Windows device IDs and computer name (Admin) |
+| `RepairProfiles` | Repairs ProfileList `.bak` keys (Admin) |
 
-**Before running:**
+```powershell
+.\change_device_id.ps1
+.\change_device_id.ps1 -Mode LegacyReset
+.\change_device_id.ps1 -Mode RepairProfiles
+```
 
-- Close Windsurf completely
-- Run PowerShell as Administrator
+### Windows usage
 
-### 3. Change Windows Device ID (change_device_id.ps1)
+1. Open **PowerShell as Administrator**
+2. `cd` to this folder
+3. Run the script you need, or use `how-to-run.bat`
 
-**What it does:** Provides multiple modes depending on your use case
+```powershell
+.\reset_cursor_windows-v0.1.ps1
+.\reset_windsurf_windows-v0.1.ps1
+.\change_device_id.ps1
+```
 
-**Simple steps:**
-
-- `Fingerprint` (default): Generates a composite, probabilistic identity output (JSON) based on stable system signals and consistency over time. Does not modify Windows IDs.
-- `LegacyReset`: Changes Windows device IDs and computer name and creates backups.
-- `RepairProfiles`: Repairs Windows ProfileList temp-profile issues (fixes `.bak` profile keys).
-
-**Before running:**
-
-- `Fingerprint`: Does not require Administrator.
-- `LegacyReset` and `RepairProfiles`: Run PowerShell as Administrator.
-- You may need to restart your computer afterward.
-
-## How to Use These Tools
-
-1. **Open PowerShell as Administrator**
-
-   - Right-click on PowerShell
-   - Select "Run as Administrator"
-
-2. **Go to the folder with these scripts**
-
-   - Use the `cd` command (example: `cd C:\Downloads\MachineIDTools`)
-
-3. **Run the script you need**
-
-   - For Cursor: `.\reset_cursor_windows-v0.1.ps1`
-   - For Windsurf: `.\reset_windsurf_windows-v0.1.ps1`
-   - For Windows identity output (default): `.\change_device_id.ps1`
-   - For legacy reset (Admin): `.\change_device_id.ps1 -Mode LegacyReset`
-   - For profile repair (Admin): `.\change_device_id.ps1 -Mode RepairProfiles`
-   - Optional: `LegacyReset` can be run with `-UpdateProfileListPaths` (advanced)
-
-4. **Follow the on-screen instructions**
-   - The script will guide you through the process
-   - It will create backups automatically
+---
 
 ## Important Notes
 
-- **Always run as Administrator** - These scripts need special permissions
-- **Backups are created automatically** - Your original settings are saved
-- **May require restart** - Some changes only take effect after restarting
-- **Use at your own risk** - While safe when used correctly, these scripts modify system settings
+- **Backups** are created automatically (`.backup` files or timestamped folders)
+- **Close the editor** before running reset scripts
+- **System ID changes** may require a reboot (Linux) or restart (Windows)
+- **Use at your own risk** — these scripts modify application and system identifiers
 
 ## Files Included
 
-- `reset_cursor_windows-v0.1.ps1` - Resets Cursor IDs
-- `reset_windsurf_windows-v0.1.ps1` - Resets Windsurf IDs
-- `change_device_id.ps1` - Fingerprint / legacy reset / profile repair modes
+**Windows**
+
+- `reset_cursor_windows-v0.1.ps1`
+- `reset_windsurf_windows-v0.1.ps1`
+- `change_device_id.ps1`
+- `how-to-run.bat`
+
+**Linux**
+
+- `reset_cursor_linux-v0.1.sh`
+- `reset_windsurf_linux-v0.1.sh`
+- `change_device_id_linux.sh`
+- `how-to-run.sh`

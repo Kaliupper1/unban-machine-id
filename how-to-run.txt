@@ -1,3 +1,16 @@
-powershell -ExecutionPolicy Bypass -File "reset_cursor_windows-v0.1.ps1"
-powershell -ExecutionPolicy Bypass -File "reset_windsurf_windows-v0.1.ps1"
-powershell -ExecutionPolicy Bypass -File "change_device_id.ps1"
+Windows (PowerShell as Administrator):
+  powershell -ExecutionPolicy Bypass -File "reset_cursor_windows-v0.1.ps1"
+  powershell -ExecutionPolicy Bypass -File "reset_windsurf_windows-v0.1.ps1"
+  powershell -ExecutionPolicy Bypass -File "change_device_id.ps1"
+
+Or double-click: how-to-run.bat
+
+Linux:
+  chmod +x *.sh
+  ./how-to-run.sh
+
+Or run directly:
+  ./reset_cursor_linux-v0.1.sh
+  ./reset_windsurf_linux-v0.1.sh
+  ./change_device_id_linux.sh Fingerprint
+  sudo ./change_device_id_linux.sh ResetMachineId
